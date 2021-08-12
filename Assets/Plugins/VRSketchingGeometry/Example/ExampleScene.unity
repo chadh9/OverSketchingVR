@@ -306,6 +306,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1754604655}
   - component: {fileID: 1754604654}
+  - component: {fileID: 1754604656}
+  - component: {fileID: 1754604657}
   m_Layer: 0
   m_Name: VRSketchingExample
   m_TagString: Untagged
@@ -320,7 +322,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1754604653}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8ece8ec75abf30459dd38ad1a3c5868, type: 3}
   m_Name: 
@@ -347,3 +349,44 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1754604656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754604653}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7504c467ec14c64191c01a78a59ca41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggle: 0
+  Defaults: {fileID: 11400000, guid: 80ac1fe1704d8434eac74bc2c69b9794, type: 2}
+  SketchWorld: {fileID: 0}
+  DeserializedSketchWorld: {fileID: 0}
+  LineSketchObject: {fileID: 0}
+  RibbonSketchObject: {fileID: 0}
+  PatchSketchObject: {fileID: 0}
+  SketchObjectGroup: {fileID: 0}
+  SketchObjectSelection: {fileID: 0}
+--- !u!114 &1754604657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754604653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41ede0dfff698c845a98f2cd62d5cf1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Defaults: {fileID: 11400000, guid: 80ac1fe1704d8434eac74bc2c69b9794, type: 2}
+  SketchWorld: {fileID: 0}
+  DeserializedSketchWorld: {fileID: 0}
+  LineSketchObject: {fileID: 0}
+  RibbonSketchObject: {fileID: 0}
+  PatchSketchObject: {fileID: 0}
+  SketchObjectGroup: {fileID: 0}
+  SketchObjectSelection: {fileID: 0}

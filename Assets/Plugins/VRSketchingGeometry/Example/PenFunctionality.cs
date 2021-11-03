@@ -13,6 +13,7 @@ using VRSketchingGeometry.Commands.Selection;
 using VRSketchingGeometry.SketchObjectManagement;
 using VRSketchingGeometry.Export;
 using UnityEngine.XR;
+using UnityEngine.UI;
 
 using Valve.VR;
 
@@ -25,6 +26,7 @@ public class PenFunctionality : MonoBehaviour
     public SteamVR_Action_Boolean redo;
     public SteamVR_Action_Vector2 weightSlider;
     public SteamVR_Action_Vector2 rangeSlider;
+    public GameObject displayButton;
 
     public OverSketching3 overSketch;
 
@@ -60,6 +62,9 @@ public class PenFunctionality : MonoBehaviour
     [Range(0f, 1000f)]
     public float range;
 
+    Text displayButtonText;
+
+
 
     void Start()
     {
@@ -67,6 +72,7 @@ public class PenFunctionality : MonoBehaviour
 
         SketchObjectGroup = Instantiate(Defaults.SketchObjectGroupPrefab).GetComponent<SketchObjectGroup>();
 
+        displayButtonText = displayButton.gameObject.GetComponent<Text>();
 
 
         Invoker = new CommandInvoker();
@@ -131,7 +137,13 @@ public class PenFunctionality : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+       // Oversketching();
+        Deletion();
+
+    }
+
+    void Oversketching()
+    {
         SteamVR_Action_Pose poseActionR;
         poseActionR = SteamVR_Input.GetAction<SteamVR_Action_Pose>("Pose");
 
@@ -153,46 +165,57 @@ public class PenFunctionality : MonoBehaviour
 
         if (drawCurve.state)
         {
-
+            displayButtonText.text = "Drawing";
             Invoker.ExecuteCommand(new AddControlPointContinuousCommand(dCurve, vPosition));
             print("ollaaaa");
         }
         if (drawCurve.lastStateUp)
         {
+            displayButtonText.text = "";
             createDCurve();
         }
 
         if (undo.state)
         {
+            displayButtonText.text = "Undo";
             Invoker.Undo();
         }
+        if (undo.lastStateUp)
+        {
+            displayButtonText.text = "";
+        }
+
         if (redo.state)
         {
+            displayButtonText.text = "Redo";
             Invoker.Redo();
         }
+
+        if (redo.lastStateUp)
+        {
+            displayButtonText.text = "";
+        }
+
         if (drawOverSketchingCurve.state)
-            {
-
-            //OVERSKETCH
-
-            //   createOCurve();
-            //InvokerOCurve.ExecuteCommand(new AddControlPointContinuousCommand(oCurve, vPosition));
+        {
 
 
-            //DELETE
 
-            foreach (LineSketchObject lineSketchObject in FindObjectsOfType<LineSketchObject>())
-            {
-                Invoker.ExecuteCommand(new DeleteControlPointsByRadiusCommand(lineSketchObject, vPosition, range/2));
-            }
+            displayButtonText.text = "Oversketching";
+            createOCurve();
+            InvokerOCurve.ExecuteCommand(new AddControlPointContinuousCommand(oCurve, vPosition));
+
+
+         
 
         }
 
         //OVERSKETCH
-        /*
+
         
             if (drawOverSketchingCurve.lastStateUp)
             {
+                displayButtonText.text= "";       
 
                 foreach (LineSketchObject lineSketchObject in FindObjectsOfType<LineSketchObject>())
                 {
@@ -207,13 +230,114 @@ public class PenFunctionality : MonoBehaviour
                 oCurve = Instantiate(Defaults.LineSketchObjectPrefab).GetComponent<LineSketchObject>();
                 
         }
-        */
 
-        //DELETION
-        if (drawOverSketchingCurve.lastStateUp)
+
+
+    }
+    void Deletion()
+    {
+
+            SteamVR_Action_Pose poseActionR;
+            poseActionR = SteamVR_Input.GetAction<SteamVR_Action_Pose>("Pose");
+
+            vPosition = poseActionR[SteamVR_Input_Sources.RightHand].localPosition;
+            qRotation = poseActionR[SteamVR_Input_Sources.RightHand].localRotation;
+
+            PenPoint.transform.position = vPosition;
+            PenPoint.transform.rotation = qRotation;
+
+            rangeIndicatorScaling();
+
+            oCurve.name = "oCurve";
+
+            if (Mathf.Abs(weightSlider.axis.y) > Mathf.Abs(weightSlider.axis.x))
+                weight += weightSlider.axis.y * 10;
+            if (Mathf.Abs(weightSlider.axis.y) < Mathf.Abs(weightSlider.axis.x))
+                range += weightSlider.axis.x * 0.01f;
+
+
+            if (drawCurve.state)
             {
+                displayButtonText.text = "Drawing";
+                Invoker.ExecuteCommand(new AddControlPointContinuousCommand(dCurve, vPosition));
+                print("ollaaaa");
+            }
+            if (drawCurve.lastStateUp)
+            {
+                displayButtonText.text = "";
                 createDCurve();
             }
+
+            if (undo.state)
+            {
+                displayButtonText.text = "Undo";
+                Invoker.Undo();
+            }
+            if (undo.lastStateUp)
+            {
+                displayButtonText.text = "";
+            }
+
+            if (redo.state)
+            {
+                displayButtonText.text = "Redo";
+                Invoker.Redo();
+            }
+
+            if (redo.lastStateUp)
+            {
+                displayButtonText.text = "";
+            }
+
+            if (drawOverSketchingCurve.state)
+            {
+
+                //OVERSKETCH
+
+                //displayButtonText.text = "Oversketching";
+                //   createOCurve();
+                //InvokerOCurve.ExecuteCommand(new AddControlPointContinuousCommand(oCurve, vPosition));
+
+
+                //DELETE
+
+                displayButtonText.text = "Deletion";
+                foreach (LineSketchObject lineSketchObject in FindObjectsOfType<LineSketchObject>())
+                {
+                    Invoker.ExecuteCommand(new DeleteControlPointsByRadiusCommand(lineSketchObject, vPosition, range / 2));
+                }
+
+            }
+
+            //OVERSKETCH
+            /*
+
+                if (drawOverSketchingCurve.lastStateUp)
+                {
+                    displayButtonText.text= "";       
+
+                    foreach (LineSketchObject lineSketchObject in FindObjectsOfType<LineSketchObject>())
+                    {
+                    Invoker.ExecuteCommand(new OverSketchLineCommand(lineSketchObject, oCurve, weight, range));
+                      // lineSketchObject.SetControlPoints(overSketch.calculateScaledCurve(weight, range/2, oCurve, lineSketchObject));
+
+                    smoothingCurve(lineSketchObject, oCurve, 0.005f);
+                    //Invoker.ExecuteCommand(new RefineMeshCommand(lineSketchObject));
+                }
+
+                    InvokerOCurve.ExecuteCommand(new DeleteObjectCommand(oCurve, SketchWorld));
+                    oCurve = Instantiate(Defaults.LineSketchObjectPrefab).GetComponent<LineSketchObject>();
+
+            }
+            */
+
+            //DELETION
+            if (drawOverSketchingCurve.lastStateUp)
+            {
+                displayButtonText.text = "";
+                createDCurve();
+            }
+        
     }
 
     IEnumerator fadeOCurve(LineSketchObject oCurve)

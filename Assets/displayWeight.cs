@@ -19,7 +19,7 @@ public class displayWeight : MonoBehaviour
     void Update()
     {
 
-        gameObject.GetComponent<Text>().text = (penFunctionality.weight).ToString();
+        gameObject.GetComponent<Text>().text = (1000-penFunctionality.weight/100).ToString();
         
     }
 }

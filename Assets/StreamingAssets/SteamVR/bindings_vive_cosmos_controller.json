@@ -254,6 +254,9 @@
                   }
                },
                "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "touch"
+               },
                "path" : "/user/hand/right/input/joystick"
             },
             {
@@ -266,6 +269,9 @@
                   }
                },
                "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "touch"
+               },
                "path" : "/user/hand/right/input/joystick"
             },
             {
@@ -348,6 +354,24 @@
                },
                "mode" : "button",
                "path" : "/user/hand/right/input/b"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/default/in/tutorial"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/default/in/tutorial"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/grip"
             }
          ]
       },

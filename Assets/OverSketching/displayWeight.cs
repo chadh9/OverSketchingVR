@@ -1,14 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class displayUI : MonoBehaviour
+public class displayWeight : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject SketchRunner;
     PenFunctionality penFunctionality;
-    Text weightText;
+
 
     void Start()
     {
@@ -18,8 +19,6 @@ public class displayUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gameObject.transform.position = penFunctionality.vPosition;
-        gameObject.transform.rotation = penFunctionality.qRotation;
-        
+        gameObject.GetComponent<Text>().text = String.Format("{0:0.0}", (penFunctionality.maxWeight - penFunctionality.weight)/100 ); ;      
     }
 }

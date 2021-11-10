@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class displayWeight : MonoBehaviour
+public class displayUI : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject SketchRunner;
     PenFunctionality penFunctionality;
-    Text weightText;
+
 
     void Start()
     {
@@ -18,8 +18,8 @@ public class displayWeight : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        gameObject.GetComponent<Text>().text = (1000-penFunctionality.weight/100).ToString();
+        gameObject.transform.position = penFunctionality.vPosition;
+        gameObject.transform.rotation = penFunctionality.qRotation;
         
     }
 }

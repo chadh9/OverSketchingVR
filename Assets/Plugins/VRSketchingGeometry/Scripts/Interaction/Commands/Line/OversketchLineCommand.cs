@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using VRSketchingGeometry.SketchObjectManagement;
 
-namespace VRSketchingGeometry.Commands.Line {
+namespace VRSketchingGeometry.Commands.Line
+{
     /// <summary>
     /// Transform LineSKetchObject by approaching another LinesketchObject
     /// </summary>
@@ -26,25 +26,27 @@ namespace VRSketchingGeometry.Commands.Line {
         /// Determines how strong the attraction will be. The lower the value the greater the transformation.
         /// </summary>
         private float distanceScaling;
-
-        private float rangeScaling;
+        /// In order for a destination control point to be modified by an Oversketching control point, their distance has to be below this value.
+        private float affectedRange;
         /// <summary>
         /// Command for transforming a curve by the means of oversketching.
         /// </summary>
         /// <param name="dCurve">The curve that will be transformed.</param>
         /// <param name="oCurve">The curve that serves as reference for transformation.</param>
-        /// <param name="distanceScaling">Should be set bigger than 0. Determines how strong the attraction will be. The more the value approaches 0, the stronger the attraction.</param>
-        public OverSketchLineCommand(LineSketchObject dCurve, LineSketchObject oCurve, float distanceScaling, float rangeScaling) {
+        /// <param name="distanceScaling">Should be set bigger than 1. Determines how strong the attraction will be. The more the value approaches 0, the stronger the attraction.</param>
+        /// <param name="affectedRange">Should be set bigger than 0. Oversketching control points and destination control points need to have their distances below this value in order to interact. </param>
+        public OverSketchLineCommand(LineSketchObject dCurve, LineSketchObject oCurve, float distanceScaling, float affectedRange)
+        {
             this.dCurve = dCurve;
             this.oCurve = oCurve;
             originalDCurve = dCurve.GetControlPoints();
             this.distanceScaling = distanceScaling;
-            this.rangeScaling = rangeScaling;
+            this.affectedRange = affectedRange;
         }
 
         public bool Execute()
         {
-            dCurve.SetControlPoints(calculateScaledCurve(distanceScaling, rangeScaling, oCurve, dCurve));
+            dCurve.SetControlPoints(calculateScaledCurve(distanceScaling, affectedRange, oCurve, dCurve));
             return true;
         }
 
@@ -59,29 +61,21 @@ namespace VRSketchingGeometry.Commands.Line {
         }
 
 
-        public List<Vector3> calculateScaledCurve(float weight, float range, LineSketchObject oCurve, LineSketchObject dCurve)
+        private List<Vector3> calculateScaledCurve(float weight, float range, LineSketchObject oCurve, LineSketchObject dCurve)
         {
-            //standard weight : 1000
-
             List<Vector3> list = new List<Vector3>();
 
             for (int i = 0; i < dCurve.getNumberOfControlPoints(); i++)
             {
                 list.Add(new Vector3());
 
-
                 for (int j = 0; j < oCurve.GetControlPoints().Count; j++)
                 {
 
-                    if ((oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]).magnitude > range)
+                    if ((oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]).magnitude <= range)
                     {
-
-                        //list[i] += new Vector3(0,0,0);
-                    }
-                    else
-                    {
-
-                        list[i] += ((oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]) * (1 / Mathf.Pow(1.1f, weight * (oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]).sqrMagnitude)));
+                        //sqrMagnitude can be used instead of magnitude to improve performance
+                        list[i] += ((oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]) / (Mathf.Pow(weight,(oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]).magnitude)));
                     }
                 }
                 list[i] = dCurve.GetControlPoints()[i] + (list[i] / oCurve.getNumberOfControlPoints());
@@ -89,5 +83,7 @@ namespace VRSketchingGeometry.Commands.Line {
 
             return list;
         }
+
     }
+
 }

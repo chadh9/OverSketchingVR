@@ -43,17 +43,15 @@ public class PenFunctionality : MonoBehaviour
 
     private LineSketchObject dCurve;
     private LineSketchObject oCurve;
-    private LineSketchObject previewCurve;
+
     public float weight;
     public float range;
-
-    public float maxWeight = 1000;
+    public float maxWeight;
+    public float minWeight;
     private float unrestrictedWeight = 5000;
     private float unrestrictedRange = 0.1f;
-   
-    private float minDistance = 0.05f;
- 
-    Text displayButtonText;
+    private float minDistance = 0.01f;
+    private Text displayButtonText;
 
 
     void Start()
@@ -80,7 +78,9 @@ public class PenFunctionality : MonoBehaviour
         oCurve.GetComponentInChildren<Renderer>().material.color = new Color(0, 0.1f, 1f, 0.7f);
 
 
-        weight = 5000;
+        maxWeight = 50f ;
+        minWeight= 1f;
+        unrestrictedWeight = maxWeight/2;
         range = 0.1f;
 
     }
@@ -100,7 +100,7 @@ public class PenFunctionality : MonoBehaviour
         dCurve = Instantiate(Defaults.LineSketchObjectPrefab).GetComponent<LineSketchObject>();
         dCurve.minimumControlPointDistance = minDistance;
         dCurve.SetLineDiameter(0.01f);
-        dCurve.SetInterpolationSteps(100);
+        dCurve.SetInterpolationSteps(10);
     }
 
     // Update is called once per frame
@@ -126,8 +126,8 @@ public class PenFunctionality : MonoBehaviour
 
 
 
-        weight = Mathf.Clamp(unrestrictedWeight, 100, maxWeight);
-        range = Mathf.Clamp(unrestrictedRange, 0.001f, 0.8f);
+        weight = Mathf.Clamp(unrestrictedWeight, minWeight, maxWeight);
+        range = Mathf.Clamp(unrestrictedRange, 0.09f, 0.8f);
 
 
         if (drawCurveButton.state)
@@ -140,25 +140,25 @@ public class PenFunctionality : MonoBehaviour
         {
             createDCurve();
         }
-        
-        else if (isDeletionPrototype&&undoButton.state)
+
+        else if (isDeletionPrototype && undoButton.state)
         {
             displayButtonText.text = "Undo";
             Invoker.Undo();
         }
-        else if (isDeletionPrototype&&redoButton.state)
+        else if (isDeletionPrototype && redoButton.state)
         {
             displayButtonText.text = "Redo";
             Invoker.Redo();
         }
-        
+
         else if (drawOverSketchingCurveButton.state)
         {
             displayButtonText.text = "Oversketching";
             createOCurve();
 
             InvokerOCurve.ExecuteCommand(new AddControlPointContinuousCommand(oCurve, vPosition));
-            
+
         }
         else if (tutorialButton.state)
         {
@@ -168,9 +168,6 @@ public class PenFunctionality : MonoBehaviour
         {
             tutorialImage.SetActive(false);
         }
-
-
-
         else if (drawOverSketchingCurveButton.lastStateUp)
         {
             if (isDeletionPrototype)
@@ -182,10 +179,10 @@ public class PenFunctionality : MonoBehaviour
                 foreach (LineSketchObject lineSketchObject in SketchObjectGroup.GetComponentsInChildren<LineSketchObject>())
                 {
                     List<Vector3> changedControlPoints = new List<Vector3>(lineSketchObject.GetControlPoints());
-                    Invoker.ExecuteCommand(new OverSketchLineCommand(lineSketchObject, oCurve, weight, range / 2));
+                    Invoker.ExecuteCommand(new OverSketchLineCommand(lineSketchObject, oCurve, Mathf.Pow(2,weight), range / 2));
                     if (!lineSketchObject.GetControlPoints().SequenceEqual(changedControlPoints))
                     {
-                        Invoker.ExecuteCommand(new SimplifyLineCommand(lineSketchObject, minDistance / 100));
+                        Invoker.ExecuteCommand(new SimplifyLineCommand(lineSketchObject, minDistance / 20));
                         Invoker.ExecuteCommand(new PopulateLineCommand(lineSketchObject, minDistance * 1.5f));
                     }
                 }
@@ -195,21 +192,24 @@ public class PenFunctionality : MonoBehaviour
             oCurve = Instantiate(Defaults.LineSketchObjectPrefab).GetComponent<LineSketchObject>();
         }
 
-        if (Mathf.Abs(weightSlider.axis.y) > Mathf.Abs(weightSlider.axis.x))
+        else if (Mathf.Abs(weightSlider.axis.y) > Mathf.Abs(weightSlider.axis.x))
         {
-            unrestrictedWeight = weight - weightSlider.axis.y * 1000 / 100;
-            displayButtonText.text = "Adjusting Oversketching weight";
+            unrestrictedWeight = weight - weightSlider.axis.y * maxWeight*Time.deltaTime;
+            displayButtonText.text = "Adjusting weight";
         }
-        if (Mathf.Abs(weightSlider.axis.y) < Mathf.Abs(weightSlider.axis.x))
+        else if (Mathf.Abs(weightSlider.axis.y) < Mathf.Abs(weightSlider.axis.x))
         {
             unrestrictedRange = range + weightSlider.axis.x * 0.01f;
             displayButtonText.text = "Adjusting range";
         }
 
-
+        else displayButtonText.text = "";
 
     }
-    void Deletion()
+    /// <summary>
+    /// Deletes control points within a certain radius around the pen
+    /// </summary>
+    private void Deletion()
     {
 
             displayButtonText.text = "Deletion";

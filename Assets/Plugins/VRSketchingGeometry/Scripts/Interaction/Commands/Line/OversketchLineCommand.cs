@@ -61,6 +61,14 @@ namespace VRSketchingGeometry.Commands.Line
         }
 
 
+        /// <summary>
+        /// Distance based Oversketching
+        /// </summary>
+        /// <param name="weight">The bigger the value, the lower the attraction</param>
+        /// <param name="range">Ignore control points outside this range</param>
+        /// <param name="oCurve">Oversketching curve</param>
+        /// <param name="dCurve">Destination curve</param>
+        /// <returns></returns>
         private List<Vector3> calculateScaledCurve(float weight, float range, LineSketchObject oCurve, LineSketchObject dCurve)
         {
             List<Vector3> list = new List<Vector3>();
@@ -74,8 +82,8 @@ namespace VRSketchingGeometry.Commands.Line
 
                     if ((oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]).magnitude <= range)
                     {
-                        //sqrMagnitude can be used instead of magnitude to improve performance
-                        list[i] += ((oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]) / (Mathf.Pow(weight,(oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]).magnitude)));
+                        list[i] += (oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]) / 
+                            Mathf.Pow(weight,(oCurve.GetControlPoints()[j] - dCurve.GetControlPoints()[i]).magnitude);
                     }
                 }
                 list[i] = dCurve.GetControlPoints()[i] + (list[i] / oCurve.getNumberOfControlPoints());

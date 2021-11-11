@@ -19,6 +19,7 @@ public class displayWeight : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gameObject.GetComponent<Text>().text = String.Format("{0:0.0}", (penFunctionality.maxWeight - penFunctionality.weight)/100 ); ;      
+       // gameObject.GetComponent<Text>().text = String.Format("{0:0.000}", (penFunctionality.maxWeight - penFunctionality.weight)/100 ); ;
+        gameObject.GetComponent<Text>().text = String.Format("{0:0.00}", -(  penFunctionality.weight-(penFunctionality.maxWeight+penFunctionality.minWeight))/penFunctionality.maxWeight) ;
     }
 }

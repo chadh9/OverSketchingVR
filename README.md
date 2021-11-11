@@ -6,5 +6,5 @@ The functions are based on the VRSketching kernel: https://tterpi.github.io/VRSk
 
 
 ## Quick start
-Open the project in Unity and select the example scene. (\Assets\Plugins\VRSketchingGeometry\Example\ExampleScene.unity)
+Open the project in Unity and select the example scene. (\Assets\OverSketching\ExampleScene.unity)
 A VR-Headset is required.
